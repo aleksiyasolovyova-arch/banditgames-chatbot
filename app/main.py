@@ -1,31 +1,56 @@
-import os
-import shutil
+
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from pydantic import BaseModel
-
 from langchain_community.vectorstores import Chroma
-
+from app.bootstrap import bootstrap_vector_db
 from app.config import DATA_PATH, CHROMA_PATH, COLLECTION_NAME
 from app.embeddings import get_embedding_function
 from app.ingest import load_documents, split_documents, add_chunk_ids
 from app.rag import retrieve_context, generate_answer
 from app.cache import cache_get, cache_set
 
-app = FastAPI(title="Game Platform RAG Chatbot")
 
+# -----------------------------
+# Lifespan (startup / shutdown)
+# -----------------------------
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    bootstrap_vector_db()
+    yield
+    # Shutdown (optional, nothing needed for now)
+
+
+app = FastAPI(
+    title="Game Platform RAG Chatbot",
+    lifespan=lifespan,
+)
+
+
+# -----------------------------
+# API models
+# -----------------------------
 class ChatRequest(BaseModel):
     query: str
+
 
 class ChatResponse(BaseModel):
     answer: str
     cached: bool
 
+
 class IngestResponse(BaseModel):
     ingested_chunks: int
 
+
+# -----------------------------
+# Routes
+# -----------------------------
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
 
 @app.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest):
@@ -40,6 +65,7 @@ def chat(req: ChatRequest):
 
     cache_set("chat", payload, answer)
     return ChatResponse(answer=answer, cached=False)
+
 
 @app.post("/ingest", response_model=IngestResponse)
 def ingest(reset: bool = False):
