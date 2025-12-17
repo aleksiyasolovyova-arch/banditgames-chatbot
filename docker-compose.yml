@@ -1,0 +1,30 @@
+services:
+  api:
+    build: .
+    container_name: rag_api
+    env_file: .env
+    volumes:
+      - ./chroma:/app/chroma
+      - ./data:/app/data
+    depends_on:
+      - redis
+      - ollama
+    ports:
+      - "8000:8000"
+
+  redis:
+    image: redis:7-alpine
+    container_name: rag_redis
+    ports:
+      - "6379:6379"
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: rag_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  ollama_data:
