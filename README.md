@@ -115,7 +115,7 @@ If you put a new document in the data folder, it needs to be ingested.
 To trigger ingestion manually:
 
 ```
-curl -X POST "http://localhost:8000/ingest"
+curl -X POST "http://localhost:8001/ingest"
 ```
 
 This will:
@@ -131,7 +131,7 @@ This will:
 To completely rebuild the vector database:
 
 ```
-curl -X POST "http://localhost:8000/ingest?reset=true"
+curl -X POST "http://localhost:8001/ingest?reset=true"
 ```
 
 This will:
@@ -160,7 +160,7 @@ Use this option when a full reindex is required.
 Send a query to the chatbot:
 
 ```
-curl -X POST "http://localhost:8000/chat" \
+curl -X POST "http://localhost:8001/chat" \
   -H "Content-Type: application/json" \
   -d '{"query":"How many pieces do I have in chess?"}'
 ```
@@ -201,7 +201,7 @@ This design mirrors production-grade RAG systems and avoids race conditions, unn
 Verify that the API is running:
 
 ```
-curl http://localhost:8000/health
+curl http://localhost:8001/health
 ```
 
 Expected response:
