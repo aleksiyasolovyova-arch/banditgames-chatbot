@@ -6,7 +6,7 @@ Copy `.env.example` to `.env` and edit if needed.
 ### 2) Start containers
 docker compose up --build -d
 
-### 3) Pull the LLM model into Ollama
+### 3) Pull the LLM model into Ollama if not pulled already
 docker exec -it rag_ollama ollama pull mistral
 
 (Or change OLLAMA_MODEL in .env.)
@@ -24,9 +24,3 @@ curl -X POST "http://localhost:8000/ingest?reset=true"
 curl -X POST "http://localhost:8000/chat" \
   -H "Content-Type: application/json" \
   -d '{"query":"How many pieces do I have in chess?"}'
-
-
-iwr "http://localhost:8000/chat" `                                                                                       
->>   -Method POST `                                                                                                                                                                 
->>   -ContentType "application/json" `                                                                                                                                              
->>   -Body '{"query":"How many pieces do I have in chess?"}' 
